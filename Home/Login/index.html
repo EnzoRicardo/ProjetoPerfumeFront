@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../imagens/P.png">
+    <title>PERFUMARIA</title>
+    <link rel="stylesheet" href="style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+
+<script>
+    const login = async () => {
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+
+        if (!email || !senha) {
+            alert("Os campos são obrigatórios.");
+            return;
+        }
+
+        const response = await fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, senha })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert(result.message);
+            window.location.href = '../index.html';
+        } else {
+            alert(result.message);
+        }
+    }
+</script>
+
+</head>
+
+<body>
+    <header class="header">
+        <a href="#" class="logo">Bon ar</a>
+        <nav class="nav">
+            <a href="../index.html">Home</a>
+            <a href="#">Sobre</a>
+            <a href="#">Contato</a>
+            <a href="../Home/login/index.html">Login</a>
+            <a href="#"><i class='bx bxs-cart'></i></a>
+        </nav>
+    </header>
+
+
+
+    <section class="home">
+        <div class="content">
+            <p>Experience smooth elegance with BLEU DE CHANEL After Shave Lotion.</p>
+        </div>
+
+        <div class="wrapper-login">
+            <h2>Login</h2>
+            <form action="#">
+                <div class="input-box">
+                    <input type="email" class="form-control" id="email">
+                    <label for="'email" class="form-label">Email</label>
+                </div>
+                <div class="input-box">
+                    <label for="senha" class="form-label">Senha</label>
+                    <input onkeyup="validarPadraoSenha(event)" type="password" class="form-control" id="senha">
+                </div>
+
+                <div class="remember-forgot">
+                    <label><input type="checkbox">Lembre-se</label>
+                    <a href="#">Esqueceu sua senha?</a>
+                </div>
+
+                <button onclick="login()" type="button" class="btn btn-primary">Login</button>
+
+                <label id="campoObrigatorio" class="labelValidacao">Os campos são obrigatórios.</label>
+                <label id="senhaTamanho" class="labelValidacao">A senha deve ter de 8 a 16 caracteres.</label>
+                <label id="senhaPadrao" class="labelValidacao">A senha deve ter: 1 letra maíscula e 1 caractere
+                especial.</label>
+                
+                <div class="register-link">
+                    <p>Não tem conta?<a href="../cadastre.html">Crie agora mesmo!</a></p>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+
+</html>
