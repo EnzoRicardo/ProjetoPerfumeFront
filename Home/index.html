@@ -35,8 +35,8 @@
         <div class="content-wrapper">
             <!-- Vídeo à esquerda -->
             <div class="video">
-                <video id="video1" width="1920" height="1080" autoplay loop muted>
-                    <source src="./Videos/Previa 3 - Lateral.mp4" type="video/mp4">
+                <video id="video1" width="1920" height="1080" autoplay muted>
+                    <source id="source1" src="./Videos/Previa 3 - Lateral.mp4" type="video/mp4">
                 </video>
             </div>
     
@@ -49,6 +49,22 @@
 
 
     <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const video = document.getElementById("video1");
+            const videoSource = document.getElementById("source1");
+
+            // Lista dos vídeos para reproduzir em sequência
+            const videoList = ["./Videos/Previa 3 - Lateral.mp4", "./Videos/Bleu de Chanel.mp4"];
+            let currentIndex = 0;
+
+            video.addEventListener("ended", () => {
+                currentIndex = (currentIndex + 1) % videoList.length;
+
+                videoSource.src = videoList[currentIndex];
+                video.load();
+                video.play();
+            });
+        });
 
 
     const adicionarAoCarrinho = (id, nome, preco) => {
