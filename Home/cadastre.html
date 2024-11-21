@@ -7,7 +7,7 @@
     <link href="../css/style.css" rel="stylesheet" />
 
     <script>
-        const cadastrar = async () => {
+        const cadastrarU = async () => {
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
     
@@ -16,7 +16,7 @@
                 return;
             }
     
-            const response = await fetch('http://localhost:3000/api/cadastrar', {
+            const response = await fetch('http://localhost:3000/api/cadastrarU', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -55,7 +55,7 @@
                 <input type="checkbox" id="status" checked> Ativo
             </div>
 
-            <button onclick="cadastrar()" type="button" class="btn btn-primary">Salvar</button>
+            <button onclick="cadastrarU()" type="button" class="btn btn-primary">Salvar</button>
         </form>
 
 

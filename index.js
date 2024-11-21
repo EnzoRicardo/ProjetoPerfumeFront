@@ -1,10 +1,13 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const bodyParser = require('body-parser')
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use(bodyParser.json());
 
 app.use(express.static('./Home'))
 
@@ -45,7 +48,7 @@ app.put('/api/usuarios/:id', (req, res) => {
 
 
 
-app.post('/api/cadastrar', (req, res) => {
+app.post('/api/cadastrarU', (req, res) => {
     const { email, senha } = req.body;
 
     if (!email || !senha) {
@@ -59,6 +62,68 @@ app.post('/api/cadastrar', (req, res) => {
     });
 });
 
+
+// Rota para obter todos os produtos
+app.get('/api/produtos', (req, res) => {
+    db.query('SELECT * FROM produtos', (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Erro ao buscar produtos.' });
+        }
+
+        // Convertendo o BLOB de volta para Base64 para envio
+        const produtosComImagemBase64 = results.map(produto => ({
+            ...produto,
+            imagem: produto.imagem ? produto.imagem.toString('base64') : null  // Converte o BLOB de volta para Base64
+        }));
+
+        res.json(produtosComImagemBase64);
+    });
+});
+
+// Rota para excluir um produto
+app.delete('/api/produtos/:id', (req, res) => {
+    const { id } = req.params;
+    db.query('DELETE FROM produtos WHERE id = ?', [id], (err, results) => {
+        if (err) return res.status(500).json({ message: 'Erro ao excluir produto.' });
+        res.status(200).json({ message: 'Produto excluído com sucesso!' });
+    });
+});
+
+// Rota para atualizar um usuário
+app.put('/api/produtos/:id', (req, res) => {
+    const { id } = req.params;
+    const { nome, descricao, preco } = req.body;
+
+    db.query(
+        'UPDATE produtos SET nome = ?, descricao = ?, preco = ? WHERE id = ?',
+        [nome, descricao, preco, id],
+        (err, results) => {
+            if (err) return res.status(500).json({ message: 'Erro ao atualizar produto.' });
+            res.status(200).json({ message: 'Produto atualizado com sucesso!' });
+        }
+    );
+});
+
+app.post('/api/cadastrarP', (req, res) => {
+    const { nome, descricao, preco, imagem } = req.body;
+
+    if (!nome || !descricao || !preco || !imagem) {
+        return res.status(400).json({ message: 'Os campos são obrigatórios.' });
+    }
+
+    const imagemBuffer = Buffer.from(imagem, 'base64')
+
+    // Inserir produto no banco de dados
+    const query = `INSERT INTO produtos (nome, descricao, preco, imagem) VALUES (?, ?, ?, ?)`;
+    db.query(query, [nome, descricao, preco, imagemBuffer], (err, result) => {
+        if (err) {
+            console.log(err)
+            return res.status(500).json({message: 'Erro ao cadastrar produto.'});
+        }
+        res.status(201).json({message: 'Produto cadastrado com sucesso!'});
+    });
+});
 
 // Rota de login
 app.post('/api/login', (req, res) => {

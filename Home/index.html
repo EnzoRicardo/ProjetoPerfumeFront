@@ -12,79 +12,113 @@
 
 <body>
     <header class="header">
-        
-         <a href="#" class="logo">Perfumaria</a>
-        
+        <a href="#" class="logo">Perfumaria</a>
         <div class="search-box">
-            <input class="search-txt" type="text" name="" placeholder="Pesquise aqui"> 
-            <a class="search-btn" href="#"></a>
-            <i class='bx bx-search'></i>
-            <div id="suggestions" class="suggestions"></div> 
+            <input class="search-txt" type="text" name="" placeholder="Pesquise aqui">
+            <a class="search-btn" href="#"><i class='bx bx-search'></i></a>
+            <div id="suggestions" class="suggestions"></div>
         </div>
-
         <nav class="nav">
             <a href="#">Home</a>
             <a href="#">Sobre</a>
             <a href="#">Contato</a>
+            <a href="cadastroproduto.html">CadProd</a>
+            <a href="cadastre.html">CadUser</a>
             <a href="../login/index.html">Login</a>
-            <a href="#"><i class='bx bxs-cart'></i></a>
+            <a href="lista-produto.html">ProdList</a>
+            <a href="lista-user.html">UserList</a>
+            <a href="carrinho.html"><i class='bx bxs-cart'></i></a>
         </nav>
     </header>
 
     <section class="home">
-
-        <div class="content">
-
-            <div class="card">
-                <img src="../IMG/CR7 Origins/CR7 O White.png" alt="Produto">
-                <h3>CR7 Origins</h3>
-                <p>Cristiano Ronaldo Origins - EDT</p>
-                <div class="price">R$ 300,00</div>
-                <button>Comprar agora</button>
+        <div class="content-wrapper">
+            <!-- Vídeo à esquerda -->
+            <div class="video">
+                <video id="video1" width="1920" height="1080" autoplay loop muted>
+                    <source src="./Videos/Previa 3 - Lateral.mp4" type="video/mp4">
+                </video>
             </div>
-
-            <div class="card2">
-                <img src="../IMG/Bleu After Shave/Bleu de Chanel After Shave White.png" alt="Produto">
-                <h3>Bleu de Chanel</h3>
-                <p>Bleu de Chanel After Shave</p>
-                <div class="price">R$ 560,00</div>
-                <button>Comprar agora</button>
+    
+            <!-- Produtos à direita (Alteração para ser dinâmico) -->
+            <div class="products" id="products-container">
+                <!-- Aqui os produtos serão injetados dinamicamente -->
             </div>
-
-            <div class="card3">
-                <img src="./IMG/Bleu EDT/Bleu de Chanel After Shave White.png" alt="Produto">
-                <h3>Bleu de Chanel</h3>
-                <p>Bleu de Chanel - EDT</p>
-                <div class="price">R$ 900,00</div>
-                <button>Comprar agora</button>
-            </div>
-
-            <div class="card4">
-                <img src="./IMG/White BR Hero.png" alt="Produto">
-                <h3>Burberry Hero</h3>
-                <p>Burberry Hero - EDP</p>
-                <div class="price">R$ 800,00</div>
-                <button>Comprar agora</button>
-            </div>
-
-            <div class="card5">
-                <img src="./IMG/Azzaro Sport/white Azzaro.png"alt="Produto">
-                <h3>Azarro Sport</h3>
-                <p>Azarro Sport - EDT</p>
-                <div class="price">R$ 200,00</div>
-                <button>Comprar agora</button>
-            </div>
-
-        </div>
-
-        <div class="video">
-            <video id="video1"  width="1920" height="1080" autoplay loop muted>
-                <source src="./Videos/Previa 3 - Lateral.mp4" type="video/mp4">
-            </video>
         </div>
     </section>
 
-    <script src="script.js"></script>
+
+    <script>
+
+
+    const adicionarAoCarrinho = (id, nome, preco) => {
+        const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+        const produto = { id, nome, preco };
+
+        // Verificar duplicatas
+        if (carrinho.some(item => item.id === id)) {
+            alert('Produto já está no carrinho!');
+            return;
+        }
+
+        carrinho.push(produto);
+        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        alert('Produto adicionado ao carrinho!');
+    };
+    
+        // Função para carregar produtos
+    const loadProducts = async () => {
+        const response = await fetch('http://localhost:3000/api/produtos');
+        const products = await response.json();
+
+        const productsContainer = document.querySelector('.products');
+        productsContainer.innerHTML = ''; // Limpa os produtos atuais
+
+        products.forEach(product => {
+            // Criação do card do produto
+            const card = document.createElement('div');
+            card.classList.add('card');
+
+            // Imagem do produto
+            const img = document.createElement('img');
+            img.src = product.imagem ? `data:image/jpeg;base64,${product.imagem}` : 'placeholder.png';
+            img.alt = 'Produto';
+            card.appendChild(img);
+
+            // Nome do produto
+            const title = document.createElement('h3');
+            title.textContent = product.nome;
+            card.appendChild(title);
+
+            // Descrição do produto
+            const description = document.createElement('p');
+            description.textContent = product.descricao;
+            card.appendChild(description);
+
+            // Preço do produto
+            const price = document.createElement('div');
+            price.classList.add('price');
+            price.textContent = `R$ ${parseFloat(product.preco).toFixed(2)}`;
+            card.appendChild(price);
+
+            // Botão de "Comprar agora"
+            const button = document.createElement('button');
+            button.textContent = 'Comprar agora';
+            button.addEventListener('click', () => {
+                adicionarAoCarrinho(product.id, product.nome, product.preco);
+            });
+            card.appendChild(button);
+
+            // Adicionar o card ao container
+            productsContainer.appendChild(card);
+        });
+
+    };
+
+    // Carregar produtos ao iniciar a página
+    document.addEventListener('DOMContentLoaded', loadProducts);
+    </script>
+
 </body>
 
 </html>
